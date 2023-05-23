@@ -1,4 +1,4 @@
-﻿using ClassLibrary2;
+using ClassLibrary2;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Series;
@@ -15,6 +15,9 @@ namespace ViewModel
     public interface IUIServices
     {
         void ReportError(string message);
+        string? ReportSaveFile();
+        string? ReportOpenFile();
+
     }
 
     public class MainViewModel : ViewModelBase
@@ -217,11 +220,12 @@ namespace ViewModel
         }
         private void save_exe(object sender)
         {
-            SaveFileDialog files = new SaveFileDialog();
-            if (files.ShowDialog() == true)
+            string? filename = uiServices.ReportSaveFile();
+            if (filename != null)
             {
-                rawdata.Save(files.FileName);
+                rawdata.Save(filename);
             }
+
         }
 
         private bool save_can_exe(object sender)
@@ -265,12 +269,12 @@ namespace ViewModel
         }
         private void command2_exe(object sender)
         {
-            OpenFileDialog files = new OpenFileDialog();
-            if (files.ShowDialog() == true)
+            string? filename = uiServices.ReportOpenFile();
+            if (filename != null)
             {
                 try
                 {
-                    Load(files.FileName);
+                    Load(filename);
                     RaisePropertyChanged(nameof(TableData2));
                     ExecuteSplines_load();
                     RaisePropertyChanged(nameof(TableData));
@@ -301,20 +305,24 @@ namespace ViewModel
         {
             get
             {
-                LineSeries line_series = new LineSeries();
-                PlotModel plot_model = new PlotModel();
-                for (int i = 0; i < splinedata.splineDataItems.Count; i++)
+                if (splinedata != null && rawdata != null)
                 {
-                    line_series.Points.Add(new DataPoint(splinedata.splineDataItems[i].node, splinedata.splineDataItems[i].spline_value));
+                    LineSeries line_series = new LineSeries();
+                    PlotModel plot_model = new PlotModel();
+                    for (int i = 0; i < splinedata.splineDataItems.Count; i++)
+                    {
+                        line_series.Points.Add(new DataPoint(splinedata.splineDataItems[i].node, splinedata.splineDataItems[i].spline_value));
+                    }
+                    plot_model.Series.Add(line_series);
+                    ScatterSeries scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
+                    for (int i = 0; i < rawdata.node_number; i++)
+                    {
+                        scatterSeries.Points.Add(new ScatterPoint(rawdata.nodes[i], rawdata.values[i]));
+                    }
+                    plot_model.Series.Add(scatterSeries);
+                    return plot_model;
                 }
-                plot_model.Series.Add(line_series);
-                ScatterSeries scatterSeries = new ScatterSeries { MarkerType = MarkerType.Circle };
-                for (int i = 0; i < rawdata.node_number; i++)
-                {
-                    scatterSeries.Points.Add(new ScatterPoint(rawdata.nodes[i], rawdata.values[i]));
-                }
-                plot_model.Series.Add(scatterSeries);
-                return plot_model;
+                else { return null; }
             }
         }
 
