@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfApp2.MainWindow"
+<Window x:Class="WpfApp2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -93,6 +93,6 @@
         <Button x:Name="button_save" Content="Save" Margin="270,154,438,228" Command = "{Binding Command_save}"/>
         <Button x:Name="button_load" Content="Load" Margin="400,154,0,228" Command = "{Binding Command2}" HorizontalAlignment="Left" Width="96"/>
 
-        <TextBlock Grid.Row="2" Background="Red" Visibility="Collapsed" x:Name="errorBar">Error</TextBlock>
+        <TextBlock Grid.Row="2" Background="Red" VerticalAlignment="Bottom" Visibility="Collapsed" x:Name="errorBar">Error</TextBlock>
     </Grid>
 </Window>
